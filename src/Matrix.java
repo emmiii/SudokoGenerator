@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class Matrix {
-    private int size;
+    private final int size;
     private int[][] matrix;
 
     private int failureCount = 0;
@@ -88,7 +88,7 @@ public class Matrix {
         else {
             column = 6;
         }
-        ArrayList<Integer> possibleNumbers = new ArrayList(Arrays.asList(1,2,3,4,5,6,7,8,9));
+        ArrayList<Integer> possibleNumbers = new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7,8,9));
 
         for(int c = column; c < column+3; c++) {
             for(int r = row; r < row+3; r++) {
@@ -102,7 +102,7 @@ public class Matrix {
 
 
     private ArrayList<Integer> GetPossibleNumbersForCell(int row, int column) {
-        var possibleNumbers = new ArrayList(Arrays.asList(1,2,3,4,5,6,7,8,9));
+        var possibleNumbers = new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7,8,9));
         //check column
         for(int i = 0; i < size; i++) {
             if(matrix[row][i] != 0) {
