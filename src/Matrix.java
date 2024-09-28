@@ -22,50 +22,60 @@ public class Matrix {
         FillMatrix();
     }
 
+    public void ClearMatrix() { matrix = new int[size][size]; }
+
     private void FillMatrix() {
-        //fill box 1
-        FillIndependentBox(0,0);
-        //fill box 5
-        FillIndependentBox(3,3);
-        //fill box 9
-        FillIndependentBox(6,6);
-        //fill box 3
-        FillDependentBox(0, 6);
-        //fill box 7
-        FillDependentBox(6, 0);
-        //Fill in the rest
+        var solved = false;
+        while(!solved)
+        {
+            //fill box 1
+            FillIndependentBox(0,0);
+            //fill box 5
+            FillIndependentBox(3,3);
+            //fill box 9
+            FillIndependentBox(6,6);
+            //fill box 3
+            //FillDependentBox(0, 6);
+            //fill box 7
+            //FillDependentBox(6, 0);
+            //Fill in the rest
+            solved = FillRemaining();
+        }
+
     }
 
-    private void SolveRemaining()
-    {
-        var numbers = Arrays.asList(1,2,3,4,5,6,7,8,9);
-        for (var number : numbers)
-        {
-            for(int c = 0; c < size; c++) {
-                for(int r = 0; r < size; r++) {
-                    if(matrix[r][c] == number)
-                    {
 
+    private boolean FillRemaining() {
+        //Fill remaining cells
+        for(int column = 0; column < size; column++) {
+            for(int row = 0; row < size; row++) {
+                if(matrix[row][column] == 0) {
+                    var possibleNumbers = GetPossibleNumbersForCell(row, column);
+                    if(possibleNumbers.isEmpty()) {
+                        //something is wrong, start over!
+                        ClearMatrix();
+                        return false;
+                    }
+                    else if(possibleNumbers.size() == 1) {
+                        matrix[row][column] = possibleNumbers.get(0);
+                    }
+                    else {
+                        //there are multiple possibilities, randomize it
+                        var randomNumberIndex = new Random().nextInt(possibleNumbers.size());
+                        matrix[row][column] = possibleNumbers.get(randomNumberIndex);
                     }
                 }
             }
-
         }
-
+        return true;
     }
 
-    private void FillRemaining() {
-        //Fill column
-        for(int column = 0; column < size; column++) {
-            FillColumn(column);
-        }
-
-    }
     private void FillColumn(int column) {
         //note possible numbers for the column
         ArrayList<Integer> possibleNumbers = new ArrayList(Arrays.asList(1,2,3,4,5,6,7,8,9));
         while(!possibleNumbers.isEmpty()) {
-            var emptyRow = 0;
+            var emptyRows = new ArrayList<Integer>();
+            //remove all existing numbers in the column
             for(int row = 0; row < size; row++) {
                 if(matrix[row][column] != 0) {
                     var numberIndex = possibleNumbers.indexOf(matrix[row][column]);
@@ -74,26 +84,38 @@ public class Matrix {
                     }
                 }
                 else {
-                    emptyRow = row;
+                    emptyRows.add(row);
                 }
             }
-            //randomize a ok number to put in the cell
-            var numberIndex = new Random().nextInt(possibleNumbers.size());
-            var suggestedNumber = (int) possibleNumbers.toArray()[numberIndex];
+            if(emptyRows.isEmpty())
+            {
+                //there are no empty rows in the column
+                return;
+            }
+
+            //go through the row to check for ok numbers
+            for(var emptyRow : emptyRows)
+            {
+                GetPossibleNumbersForCell(emptyRow, column);
+            }
+
+            //randomize an ok number to put in the cell
+            //var numberIndex = new Random().nextInt(possibleNumbers.size());
+            //var suggestedNumber = (int) possibleNumbers.toArray()[numberIndex];
             //check row
-            var addToMatrix = true;
-            for(int c = 0; c < size; c++) {
-                if(matrix[emptyRow][c] == suggestedNumber) {
-                    var index = possibleNumbers.indexOf(suggestedNumber);
-                    if(index >= 0) {
-                        possibleNumbers.remove(index);
-                        addToMatrix = false;
-                    }
-                }
-            }
-            if(addToMatrix) {
-                matrix[emptyRow][column] = (int) possibleNumbers.toArray()[numberIndex];
-            }
+            //var addToMatrix = true;
+            //for(int c = 0; c < size; c++) {
+                //if(matrix[emptyRows][c] == suggestedNumber) {
+                    //var index = possibleNumbers.indexOf(suggestedNumber);
+                    //if(index >= 0) {
+                        //possibleNumbers.remove(index);
+                        //addToMatrix = false;
+                    //}
+                //}
+            //}
+            //if(addToMatrix) {
+                //matrix[emptyRows][column] = (int) possibleNumbers.toArray()[numberIndex];
+            //}
         }
     }
 
@@ -151,7 +173,6 @@ public class Matrix {
         var boxCompleted = false;
         while(!boxCompleted)
         {
-
             var numbersForBox = new ArrayList<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9));
             for(int c = column; c < column+3; c++) {
                 for(int r = row; r < row+3; r++) {
@@ -194,8 +215,8 @@ public class Matrix {
         var possibleNumbers = new ArrayList(Arrays.asList(1,2,3,4,5,6,7,8,9));
         //check column
         for(int i = 0; i < size; i++) {
-            if(matrix[column][i] != 0) {
-                var index = possibleNumbers.indexOf(matrix[column][i]);
+            if(matrix[row][i] != 0) {
+                var index = possibleNumbers.indexOf(matrix[row][i]);
                 if(index >= 0) {
                     possibleNumbers.remove(index);
                 }
@@ -203,8 +224,8 @@ public class Matrix {
         }
         //check row
         for(int j = 0; j < size; j++) {
-            if(matrix[j][row] != 0) {
-                var index = possibleNumbers.indexOf(matrix[j][row]);
+            if(matrix[j][column] != 0) {
+                var index = possibleNumbers.indexOf(matrix[j][column]);
                 if(index >= 0) {
                     possibleNumbers.remove(index);
                 }
