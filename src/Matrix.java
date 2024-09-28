@@ -3,16 +3,11 @@ import java.util.*;
 public class Matrix {
     private final int size;
     private int[][] matrix;
-
     private int failureCount = 0;
 
     public Matrix(int size) {
         this.size = size;
         GenerateMatrix();
-    }
-
-    public int GetSize() {
-        return size;
     }
 
     public int[][] GetMatrix() {
@@ -24,12 +19,13 @@ public class Matrix {
         FillMatrix();
     }
 
-    public void ClearMatrix() { matrix = new int[size][size]; }
+    private void ClearMatrix() {
+        matrix = new int[size][size];
+    }
 
     private void FillMatrix() {
         var solved = false;
-        while(!solved)
-        {
+        while(!solved) {
             //fill box 1
             FillIndependentBox(0,0);
             //fill box 5
@@ -68,7 +64,6 @@ public class Matrix {
         return true;
     }
 
-
     private void FillIndependentBox(int row, int column) {
         if (row < 3) {
             row = 0;
@@ -99,7 +94,6 @@ public class Matrix {
             }
         }
     }
-
 
     private ArrayList<Integer> GetPossibleNumbersForCell(int row, int column) {
         var possibleNumbers = new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7,8,9));
